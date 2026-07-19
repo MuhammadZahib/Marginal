@@ -10,23 +10,25 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.marginal.presentation.common.MarginalPinIcon
 import com.example.marginal.ui.theme.Amber
 import com.example.marginal.ui.theme.Ink
-import com.example.marginal.ui.theme.MarginalTheme
 import com.example.marginal.ui.theme.Paper
+import kotlinx.coroutines.delay
 
-/**
- * Step 1: UI only. No navigation logic yet — this screen doesn't check
- * auth state or move anywhere on its own. That comes next, once you can
- * see this render correctly.
- */
 @Composable
-fun SplashScreen() {
+fun SplashScreen(onSplashFinished: () -> Unit) {
+    // Placeholder timing — once Firebase Auth is wired in, this becomes
+    // "check currentUser" instead of a fixed delay.
+    LaunchedEffect(Unit) {
+        delay(1200)
+        onSplashFinished()
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -39,30 +41,10 @@ fun SplashScreen() {
                 bodyColor = Amber,
                 dotColor = Ink,
             )
-
             Spacer(modifier = Modifier.height(18.dp))
-
-            Text(
-                text = "Marginal",
-                style = MaterialTheme.typography.headlineSmall,
-                color = Paper,
-            )
-
+            Text(text = "Marginal", style = MaterialTheme.typography.headlineSmall, color = Paper)
             Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = "NOTES, KEPT CLOSE",
-                style = MaterialTheme.typography.labelSmall,
-                color = Paper.copy(alpha = 0.6f),
-            )
+            Text(text = "NOTES, KEPT CLOSE", style = MaterialTheme.typography.labelSmall, color = Paper.copy(alpha = 0.6f))
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SplashScreenPreview() {
-    MarginalTheme {
-        SplashScreen()
     }
 }
