@@ -5,7 +5,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.marginal.presentation.auth.ForgotPasswordScreen
 import com.example.marginal.presentation.auth.LoginScreen
+import com.example.marginal.presentation.auth.SignUpScreen
 import com.example.marginal.presentation.splash.SplashScreen
 
 @Composable
@@ -17,13 +19,22 @@ fun MarginalNavHost() {
             SplashScreen(
                 onSplashFinished = {
                     navController.navigate("login") {
-                        popUpTo("splash") { inclusive = true } // can't go back to splash
+                        popUpTo("splash") { inclusive = true }
                     }
                 }
             )
         }
         composable("login") {
-            LoginScreen()
+            LoginScreen(
+                onForgotPasswordClick = { navController.navigate("forgot_password") },
+                onSignUpClick = { navController.navigate("signup") },
+            )
+        }
+        composable("signup") {
+            SignUpScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable("forgot_password") {
+            ForgotPasswordScreen(onBackClick = { navController.popBackStack() })
         }
     }
 }
