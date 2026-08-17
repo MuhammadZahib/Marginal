@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 //import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,6 +47,7 @@ fun AddEditNoteScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Paper)
+            .statusBarsPadding()
             .padding(horizontal = 20.dp),
     ) {
         // Toolbar: Back pinned left, Delete + Save pinned right with a real gap between them.
