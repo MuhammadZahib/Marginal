@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -21,9 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
 
@@ -31,9 +35,12 @@ import com.example.marginal.ui.theme.Paper
 fun LoginScreen(
     onForgotPasswordClick: () -> Unit,
     onSignUpClick: () -> Unit,
+    onLoginSuccess: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel(),
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -75,16 +82,26 @@ fun LoginScreen(
             }
         }
 
+        if (uiState.errorMessage != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = uiState.errorMessage!!, color = Brick, style = MaterialTheme.typography.labelSmall)
+        }
+
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /* TODO: wire to AuthRepository.signIn once Firebase is set up */ },
+            onClick = { viewModel.signIn(email, password, onSuccess = onLoginSuccess) },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Ink, contentColor = Paper),
+            enabled = !uiState.isLoading && email.isNotBlank() && password.isNotBlank(),
         ) {
-            Text("Sign In")
+            if (uiState.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.height(20.dp), color = Paper, strokeWidth = 2.dp)
+            } else {
+                Text("Sign In")
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))

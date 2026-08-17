@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -25,15 +27,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
 
 @Composable
-fun SignUpScreen(onBackClick: () -> Unit) {
+fun SignUpScreen(
+    onBackClick: () -> Unit,
+    onSignUpSuccess: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel(),
+) {
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var agreedToTerms by remember { mutableStateOf(false) }
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -76,7 +85,7 @@ fun SignUpScreen(onBackClick: () -> Unit) {
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text("Password (min. 6 characters)") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             visualTransformation = PasswordVisualTransformation(),
@@ -89,15 +98,24 @@ fun SignUpScreen(onBackClick: () -> Unit) {
             Text("I agree to the Terms & Privacy Policy", style = MaterialTheme.typography.labelSmall)
         }
 
+        if (uiState.errorMessage != null) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(text = uiState.errorMessage!!, color = Brick, style = MaterialTheme.typography.labelSmall)
+        }
+
         Spacer(modifier = Modifier.height(20.dp))
 
         Button(
-            onClick = { /* TODO: wire to AuthRepository.signUp once Firebase is set up */ },
+            onClick = { viewModel.signUp(name, email, password, onSuccess = onSignUpSuccess) },
             modifier = Modifier.fillMaxWidth().height(52.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Ink, contentColor = Paper),
-            enabled = agreedToTerms && name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty(),
+            enabled = !uiState.isLoading && agreedToTerms && name.isNotBlank() && email.isNotBlank() && password.length >= 6,
         ) {
-            Text("Create Account")
+            if (uiState.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.height(20.dp), color = Paper, strokeWidth = 2.dp)
+            } else {
+                Text("Create Account")
+            }
         }
     }
 }

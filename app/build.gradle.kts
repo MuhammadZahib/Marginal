@@ -93,6 +93,8 @@ dependencies {
     // Image loading
     implementation(libs.coil.compose)
 
+    ksp("org.jetbrains.kotlin:kotlin-metadata-jvm:2.3.20")
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

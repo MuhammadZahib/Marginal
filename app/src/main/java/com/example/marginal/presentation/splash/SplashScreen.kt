@@ -14,6 +14,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.marginal.presentation.auth.AuthViewModel
 import com.example.marginal.presentation.common.MarginalPinIcon
 import com.example.marginal.ui.theme.Amber
 import com.example.marginal.ui.theme.Ink
@@ -21,12 +23,14 @@ import com.example.marginal.ui.theme.Paper
 import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen(onSplashFinished: () -> Unit) {
-    // Placeholder timing — once Firebase Auth is wired in, this becomes
-    // "check currentUser" instead of a fixed delay.
+fun SplashScreen(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToNotes: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel(),
+) {
     LaunchedEffect(Unit) {
         delay(1200)
-        onSplashFinished()
+        if (viewModel.currentUser.value != null) onNavigateToNotes() else onNavigateToLogin()
     }
 
     Box(

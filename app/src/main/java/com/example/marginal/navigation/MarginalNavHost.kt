@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.marginal.presentation.auth.ForgotPasswordScreen
 import com.example.marginal.presentation.auth.LoginScreen
 import com.example.marginal.presentation.auth.SignUpScreen
+import com.example.marginal.presentation.notes.NotesPlaceholderScreen
 import com.example.marginal.presentation.splash.SplashScreen
 
 @Composable
@@ -17,24 +18,50 @@ fun MarginalNavHost() {
     NavHost(navController = navController, startDestination = "splash") {
         composable("splash") {
             SplashScreen(
-                onSplashFinished = {
+                onNavigateToLogin = {
                     navController.navigate("login") {
                         popUpTo("splash") { inclusive = true }
                     }
-                }
+                },
+                onNavigateToNotes = {
+                    navController.navigate("notes_list") {
+                        popUpTo("splash") { inclusive = true }
+                    }
+                },
             )
         }
         composable("login") {
             LoginScreen(
                 onForgotPasswordClick = { navController.navigate("forgot_password") },
                 onSignUpClick = { navController.navigate("signup") },
+                onLoginSuccess = {
+                    navController.navigate("notes_list") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
             )
         }
         composable("signup") {
-            SignUpScreen(onBackClick = { navController.popBackStack() })
+            SignUpScreen(
+                onBackClick = { navController.popBackStack() },
+                onSignUpSuccess = {
+                    navController.navigate("notes_list") {
+                        popUpTo("login") { inclusive = true }
+                    }
+                },
+            )
         }
         composable("forgot_password") {
             ForgotPasswordScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable("notes_list") {
+            NotesPlaceholderScreen(
+                onSignOutClick = {
+                    navController.navigate("login") {
+                        popUpTo("notes_list") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
