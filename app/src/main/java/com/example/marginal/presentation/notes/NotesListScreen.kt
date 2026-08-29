@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,7 +31,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.domain.model.Note
-import com.example.marginal.presentation.auth.AuthViewModel
 import com.example.marginal.presentation.common.MarginalPinIcon
 import com.example.marginal.ui.theme.Amber
 import com.example.marginal.ui.theme.Ink
@@ -42,9 +42,8 @@ import com.example.marginal.ui.theme.TextMuted
 fun NotesListScreen(
     onNoteClick: (String) -> Unit,
     onAddNoteClick: () -> Unit,
-    onSignOutClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     viewModel: NotesListViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel(),
 ) {
     val notes by viewModel.notes.collectAsState()
 
@@ -60,17 +59,19 @@ fun NotesListScreen(
             )
         },
     ) { padding ->
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .statusBarsPadding(),
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text("Your notes", style = MaterialTheme.typography.headlineSmall)
-                TextButton(onClick = {
-                    authViewModel.signOut()
-                    onSignOutClick()
-                }) {
-                    Text("Sign Out")
+                TextButton(onClick = onSettingsClick) {
+                    Text("Settings")
                 }
             }
 

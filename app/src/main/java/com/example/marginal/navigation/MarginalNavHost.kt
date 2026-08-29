@@ -12,6 +12,7 @@ import com.example.marginal.presentation.auth.LoginScreen
 import com.example.marginal.presentation.auth.SignUpScreen
 import com.example.marginal.presentation.notes.AddEditNoteScreen
 import com.example.marginal.presentation.notes.NotesListScreen
+import com.example.marginal.presentation.settings.SettingsScreen
 import com.example.marginal.presentation.splash.SplashScreen
 
 @Composable
@@ -53,9 +54,7 @@ fun MarginalNavHost() {
             NotesListScreen(
                 onNoteClick = { noteId -> navController.navigate("note_edit?noteId=$noteId") },
                 onAddNoteClick = { navController.navigate("note_edit") },
-                onSignOutClick = {
-                    navController.navigate("login") { popUpTo("notes_list") { inclusive = true } }
-                },
+                onSettingsClick = { navController.navigate("settings") },
             )
         }
         composable(
@@ -67,6 +66,14 @@ fun MarginalNavHost() {
             })
         ) {
             AddEditNoteScreen(onBackClick = { navController.popBackStack() })
+        }
+        composable("settings") {
+            SettingsScreen(
+                onBackClick = { navController.popBackStack() },
+                onSignedOut = {
+                    navController.navigate("login") { popUpTo("notes_list") { inclusive = true } }
+                },
+            )
         }
     }
 }
