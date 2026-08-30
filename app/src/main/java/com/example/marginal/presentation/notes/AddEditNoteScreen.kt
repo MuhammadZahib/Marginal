@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +40,7 @@ import com.example.marginal.ui.theme.Paper
 @Composable
 fun AddEditNoteScreen(
     onBackClick: () -> Unit,
+    onScanClick: () -> Unit,
     viewModel: AddEditNoteViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -50,7 +52,6 @@ fun AddEditNoteScreen(
             .statusBarsPadding()
             .padding(horizontal = 20.dp),
     ) {
-        // Toolbar: Back pinned left, Delete + Save pinned right with a real gap between them.
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -58,6 +59,9 @@ fun AddEditNoteScreen(
             TextButton(onClick = onBackClick) { Text("← Back") }
 
             Spacer(modifier = Modifier.weight(1f))
+
+            TextButton(onClick = onScanClick) { Text("Scan") }
+            Spacer(modifier = Modifier.width(8.dp))
 
             if (uiState.isEditMode) {
                 TextButton(onClick = { viewModel.delete(onDone = onBackClick) }) {
@@ -83,8 +87,8 @@ fun AddEditNoteScreen(
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Paper,
                 focusedContainerColor = Paper,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
             ),
             modifier = Modifier.fillMaxWidth(),
         )
@@ -97,8 +101,8 @@ fun AddEditNoteScreen(
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Paper,
                 focusedContainerColor = Paper,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.Transparent,
             ),
             modifier = Modifier.fillMaxWidth().weight(1f),
         )

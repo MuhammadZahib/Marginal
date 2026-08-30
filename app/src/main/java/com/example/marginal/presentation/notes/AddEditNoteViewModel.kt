@@ -61,6 +61,12 @@ class AddEditNoteViewModel @Inject constructor(
         _uiState.value = _uiState.value.copy(category = value)
     }
 
+    fun appendScannedText(scannedText: String) {
+        val current = _uiState.value.body
+        val combined = if (current.isBlank()) scannedText else "$current\n\n$scannedText"
+        _uiState.value = _uiState.value.copy(body = combined)
+    }
+
     fun save(onDone: () -> Unit) {
         val state = _uiState.value
         if (state.title.isBlank() && state.body.isBlank()) return
