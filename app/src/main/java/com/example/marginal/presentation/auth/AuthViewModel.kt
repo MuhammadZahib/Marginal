@@ -39,9 +39,7 @@ class AuthViewModel @Inject constructor(
                     _uiState.value = AuthUiState()
                     onSuccess()
                 }
-                .onFailure { e ->
-                    _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't sign in")
-                }
+                .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't sign in") }
         }
     }
 
@@ -53,9 +51,7 @@ class AuthViewModel @Inject constructor(
                     _uiState.value = AuthUiState()
                     onSuccess()
                 }
-                .onFailure { e ->
-                    _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't create account")
-                }
+                .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't create account") }
         }
     }
 
@@ -65,6 +61,18 @@ class AuthViewModel @Inject constructor(
             authRepository.sendPasswordReset(email)
                 .onSuccess { _uiState.value = AuthUiState(resetEmailSent = true) }
                 .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't send reset email") }
+        }
+    }
+
+    fun changePassword(currentPassword: String, newPassword: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState(isLoading = true)
+            authRepository.changePassword(currentPassword, newPassword)
+                .onSuccess {
+                    _uiState.value = AuthUiState()
+                    onSuccess()
+                }
+                .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't change password") }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.example.marginal.data.repository
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.example.marginal.domain.model.AuthUser
@@ -43,6 +44,16 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun sendPasswordReset(email: String): Result<Unit> = runCatching {
         auth.sendPasswordResetEmail(email).await()
+    }
+
+    override suspend fun changePassword(currentPassword: String, newPassword: String): Result<Unit> = runCatching {
+        val user = auth.currentUser ?: error("Not signed in")
+        val email = user.email ?: error("No email on this account")
+        // Firebase requires a "recent" login before allowing a password
+        // change — reauthenticating with the current password satisfies that.
+        val credential = EmailAuthProvider.getCredential(email, currentPassword)
+        user.reauthenticate(credential).await()
+        user.updatePassword(newPassword).await()
     }
 
     override fun signOut() = auth.signOut()

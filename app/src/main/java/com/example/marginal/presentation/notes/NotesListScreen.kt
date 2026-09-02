@@ -22,11 +22,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -46,6 +49,7 @@ fun NotesListScreen(
     viewModel: NotesListViewModel = hiltViewModel(),
 ) {
     val notes by viewModel.notes.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsState()
 
     Scaffold(
         containerColor = Paper,
@@ -75,9 +79,31 @@ fun NotesListScreen(
                 }
             }
 
+            TextField(
+                value = searchQuery,
+                onValueChange = viewModel::onSearchQueryChange,
+                placeholder = { Text("Search notes") },
+                singleLine = true,
+                shape = RoundedCornerShape(12.dp),
+                colors = TextFieldDefaults.colors(
+                    unfocusedContainerColor = PaperCard,
+                    focusedContainerColor = PaperCard,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    focusedIndicatorColor = Color.Transparent,
+                ),
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 4.dp),
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
             if (notes.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text("Nothing here yet — tap \"New note\" to write your first one.", color = TextMuted)
+                    val message = if (searchQuery.isBlank()) {
+                        "Nothing here yet — tap \"New note\" to write your first one."
+                    } else {
+                        "No notes match \"$searchQuery\""
+                    }
+                    Text(message, color = TextMuted)
                 }
             } else {
                 LazyColumn(
