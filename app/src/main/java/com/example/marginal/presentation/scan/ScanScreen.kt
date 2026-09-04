@@ -49,6 +49,8 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import com.example.marginal.presentation.common.CloseIcon
+import com.example.marginal.presentation.common.MarginalIconButton
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
@@ -134,7 +136,9 @@ fun ScanScreen(
             }
 
             Row(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(12.dp)) {
-                TextButton(onClick = onBackClick) { Text("✕ Close", color = Color.White) }
+                MarginalIconButton(onClick = onBackClick, backgroundColor = Color.Black.copy(alpha = 0.35f)) {
+                    CloseIcon(modifier = Modifier.size(16.dp), tint = Color.White)
+                }
             }
 
             if (scanState == ScanState.Preview) {

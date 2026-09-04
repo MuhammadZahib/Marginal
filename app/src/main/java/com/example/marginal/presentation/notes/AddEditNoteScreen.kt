@@ -8,13 +8,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 //import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +35,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.domain.model.NoteCategory
+import com.example.marginal.presentation.common.BackArrowIcon
+import com.example.marginal.presentation.common.CameraIcon
+import com.example.marginal.presentation.common.CheckIcon
+import com.example.marginal.presentation.common.MarginalIconButton
+import com.example.marginal.presentation.common.TrashIcon
 import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
@@ -54,32 +58,35 @@ fun AddEditNoteScreen(
             .fillMaxSize()
             .background(Paper)
             .statusBarsPadding()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            TextButton(onClick = onBackClick) { Text("← Back") }
+            MarginalIconButton(onClick = onBackClick) {
+                BackArrowIcon(modifier = Modifier.size(20.dp), tint = Ink)
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            TextButton(onClick = onScanClick) { Text("Scan") }
-            Spacer(modifier = Modifier.width(8.dp))
+            MarginalIconButton(onClick = onScanClick) {
+                CameraIcon(modifier = Modifier.size(19.dp), tint = Ink)
+            }
+            Spacer(modifier = Modifier.width(4.dp))
 
             if (uiState.isEditMode) {
-                TextButton(onClick = { showDeleteConfirm = true }) {
-                    Text("Delete", color = Brick)
+                MarginalIconButton(onClick = { showDeleteConfirm = true }) {
+                    TrashIcon(modifier = Modifier.size(18.dp), tint = Brick)
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(4.dp))
             }
 
-            Button(
+            MarginalIconButton(
                 onClick = { viewModel.save(onDone = onBackClick) },
-                enabled = !uiState.isSaving,
-                colors = ButtonDefaults.buttonColors(containerColor = Ink, contentColor = Paper),
+                backgroundColor = if (uiState.isSaving) Ink.copy(alpha = 0.5f) else Ink,
             ) {
-                Text(if (uiState.isSaving) "Saving…" else "Save")
+                CheckIcon(modifier = Modifier.size(16.dp), tint = Paper)
             }
         }
 

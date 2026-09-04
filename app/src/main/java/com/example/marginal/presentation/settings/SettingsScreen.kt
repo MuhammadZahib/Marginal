@@ -35,7 +35,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.presentation.auth.AuthViewModel
+import com.example.marginal.presentation.common.BackArrowIcon
+import com.example.marginal.presentation.common.MarginalIconButton
 import com.example.marginal.ui.theme.Brick
+import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
 import com.example.marginal.ui.theme.Plum
 import com.example.marginal.ui.theme.TextMuted
@@ -58,8 +61,8 @@ fun SettingsScreen(
             .background(Paper)
             .statusBarsPadding(),
     ) {
-        TextButton(onClick = onBackClick, modifier = Modifier.padding(start = 12.dp)) {
-            Text("← Back")
+        MarginalIconButton(onClick = onBackClick, modifier = Modifier.padding(start = 8.dp)) {
+            BackArrowIcon(modifier = Modifier.size(20.dp), tint = Ink)
         }
 
         Row(
