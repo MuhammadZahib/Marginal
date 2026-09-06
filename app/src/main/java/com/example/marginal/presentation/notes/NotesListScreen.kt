@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,6 +51,7 @@ fun NotesListScreen(
 ) {
     val notes by viewModel.notes.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsState()
 
     Scaffold(
         containerColor = Paper,
@@ -70,7 +72,7 @@ fun NotesListScreen(
                 .statusBarsPadding(),
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 20.dp, top = 4.dp, bottom = 8.dp, end = 20.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text("Your notes", style = MaterialTheme.typography.headlineSmall)
@@ -96,22 +98,30 @@ fun NotesListScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            if (notes.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    val message = if (searchQuery.isBlank()) {
-                        "Nothing here yet — tap \"New note\" to write your first one."
-                    } else {
-                        "No notes match \"$searchQuery\""
+            when {
+                isLoading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Ink)
                     }
-                    Text(message, color = TextMuted)
                 }
-            } else {
-                LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    items(notes, key = { it.id }) { note ->
-                        NoteCard(note = note, onClick = { onNoteClick(note.id) })
+                notes.isEmpty() -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        val message = if (searchQuery.isBlank()) {
+                            "Nothing here yet — tap \"New note\" to write your first one."
+                        } else {
+                            "No notes match \"$searchQuery\""
+                        }
+                        Text(message, color = TextMuted)
+                    }
+                }
+                else -> {
+                    LazyColumn(
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        items(notes, key = { it.id }) { note ->
+                            NoteCard(note = note, onClick = { onNoteClick(note.id) })
+                        }
                     }
                 }
             }

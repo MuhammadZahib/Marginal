@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -35,8 +37,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.presentation.auth.AuthViewModel
-import com.example.marginal.presentation.common.BackArrowIcon
-import com.example.marginal.presentation.common.MarginalIconButton
+import com.example.marginal.presentation.common.MarginalBackButton
 import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
@@ -59,11 +60,10 @@ fun SettingsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Paper)
-            .statusBarsPadding(),
+            .statusBarsPadding()
+            .verticalScroll(rememberScrollState()),
     ) {
-        MarginalIconButton(onClick = onBackClick, modifier = Modifier.padding(start = 8.dp)) {
-            BackArrowIcon(modifier = Modifier.size(20.dp), tint = Ink)
-        }
+        MarginalBackButton(onClick = onBackClick, tint = Ink, modifier = Modifier.padding(start = 8.dp))
 
         Row(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
@@ -106,6 +106,8 @@ fun SettingsScreen(
         ) {
             Text("Log out", color = Brick)
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 
     if (showChangePasswordDialog) {

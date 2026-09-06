@@ -9,8 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -29,8 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.marginal.presentation.common.BackArrowIcon
-import com.example.marginal.presentation.common.MarginalIconButton
+import com.example.marginal.presentation.common.MarginalBackButton
 import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
@@ -52,12 +52,10 @@ fun SignUpScreen(
             .fillMaxSize()
             .background(Paper)
             .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
             .padding(horizontal = 26.dp),
-        verticalArrangement = Arrangement.Center,
     ) {
-        MarginalIconButton(onClick = onBackClick) {
-            BackArrowIcon(modifier = Modifier.size(20.dp), tint = Ink)
-        }
+        MarginalBackButton(onClick = onBackClick, tint = Ink)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -121,5 +119,7 @@ fun SignUpScreen(
                 Text("Create Account")
             }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }

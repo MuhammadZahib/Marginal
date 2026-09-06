@@ -2,11 +2,18 @@ package com.example.marginal.presentation.common
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,7 +27,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
-/** Tappable circular wrapper for any icon below — gives a consistent 40dp touch target. */
+/** Tappable circular wrapper for a single icon — gives a consistent 40dp touch target. */
 @Composable
 fun MarginalIconButton(
     onClick: () -> Unit,
@@ -41,6 +48,26 @@ fun MarginalIconButton(
         contentAlignment = Alignment.Center,
     ) {
         content()
+    }
+}
+
+/** Icon + "Back" label together — a bare icon alone reads as ambiguous, this is the one to use for navigation. */
+@Composable
+fun MarginalBackButton(onClick: () -> Unit, tint: Color, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(20.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick,
+            )
+            .padding(horizontal = 10.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        BackArrowIcon(modifier = Modifier.size(18.dp), tint = tint)
+        Spacer(modifier = Modifier.width(4.dp))
+        Text("Back", color = tint, style = MaterialTheme.typography.labelLarge)
     }
 }
 

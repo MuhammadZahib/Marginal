@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
@@ -19,10 +20,18 @@ class NotesListViewModel @Inject constructor(
     noteRepository: NoteRepository,
 ) : ViewModel() {
 
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     private val allNotes: StateFlow<List<Note>> = noteRepository.observeNotes()
-        // Sign-out mid-listen makes Firestore reject the active snapshot
-        // listener — see the comment history on this fix if it recurs.
-        .catch { emit(emptyList()) }
+        // The very first emission — whether it has notes or not — means the
+        // listener is live. Only then can we trust "empty" as a real answer
+        // instead of "haven't heard back yet".
+        .onEach { _isLoading.value = false }
+        .catch {
+            _isLoading.value = false
+            emit(emptyList())
+        }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _searchQuery = MutableStateFlow("")

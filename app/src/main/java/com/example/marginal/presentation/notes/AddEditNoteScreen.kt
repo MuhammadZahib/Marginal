@@ -35,9 +35,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.domain.model.NoteCategory
-import com.example.marginal.presentation.common.BackArrowIcon
 import com.example.marginal.presentation.common.CameraIcon
 import com.example.marginal.presentation.common.CheckIcon
+import com.example.marginal.presentation.common.MarginalBackButton
 import com.example.marginal.presentation.common.MarginalIconButton
 import com.example.marginal.presentation.common.TrashIcon
 import com.example.marginal.ui.theme.Brick
@@ -61,12 +61,10 @@ fun AddEditNoteScreen(
             .padding(horizontal = 16.dp),
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            MarginalIconButton(onClick = onBackClick) {
-                BackArrowIcon(modifier = Modifier.size(20.dp), tint = Ink)
-            }
+            MarginalBackButton(onClick = onBackClick, tint = Ink)
 
             Spacer(modifier = Modifier.weight(1f))
 
