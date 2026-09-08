@@ -15,5 +15,8 @@ interface AuthRepository {
 
     suspend fun changePassword(currentPassword: String, newPassword: String): Result<Unit>
 
+    /** Deletes all of the user's notes, then the account itself. Requires the current password to reauthenticate. */
+    suspend fun deleteAccount(currentPassword: String): Result<Unit>
+
     fun signOut()
 }

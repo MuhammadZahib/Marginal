@@ -18,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -55,6 +56,8 @@ fun SettingsScreen(
     var showChangePasswordDialog by remember { mutableStateOf(false) }
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
+    var showDeleteAccountDialog by remember { mutableStateOf(false) }
+    var deleteAccountPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -105,6 +108,25 @@ fun SettingsScreen(
             modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
         ) {
             Text("Log out", color = Brick)
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
+        HorizontalDivider()
+
+        SettingsGroupLabel("Danger Zone")
+        Text(
+            text = "Deleting your account permanently removes all your notes. This cannot be undone.",
+            style = MaterialTheme.typography.labelSmall,
+            color = TextMuted,
+            modifier = Modifier.padding(horizontal = 20.dp),
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        OutlinedButton(
+            onClick = { showDeleteAccountDialog = true },
+            colors = ButtonDefaults.outlinedButtonColors(contentColor = Brick),
+            modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
+        ) {
+            Text("Delete account")
         }
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -159,6 +181,59 @@ fun SettingsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { showChangePasswordDialog = false }) {
+                    Text("Cancel")
+                }
+            },
+        )
+    }
+
+    if (showDeleteAccountDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteAccountDialog = false },
+            title = { Text("Delete your account?") },
+            text = {
+                Column {
+                    Text(
+                        "This permanently deletes your account and every note in it. There's no undo. Enter your password to confirm.",
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedTextField(
+                        value = deleteAccountPassword,
+                        onValueChange = { deleteAccountPassword = it },
+                        label = { Text("Current password") },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    if (uiState.errorMessage != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(uiState.errorMessage!!, color = Brick, style = MaterialTheme.typography.labelSmall)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.deleteAccount(
+                            currentPassword = deleteAccountPassword,
+                            onSuccess = {
+                                showDeleteAccountDialog = false
+                                deleteAccountPassword = ""
+                                onSignedOut()
+                            },
+                        )
+                    },
+                    enabled = !uiState.isLoading && deleteAccountPassword.isNotBlank(),
+                ) {
+                    Text(if (uiState.isLoading) "Deleting…" else "Delete forever", color = Brick)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteAccountDialog = false
+                    deleteAccountPassword = ""
+                }) {
                     Text("Cancel")
                 }
             },

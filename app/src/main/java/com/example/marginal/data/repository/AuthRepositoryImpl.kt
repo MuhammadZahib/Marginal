@@ -3,6 +3,7 @@ package com.example.marginal.data.repository
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.UserProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.example.marginal.domain.model.AuthUser
 import com.example.marginal.domain.repository.AuthRepository
 import kotlinx.coroutines.channels.awaitClose
@@ -15,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
 ) : AuthRepository {
 
     override val currentUser: Flow<AuthUser?> = callbackFlow {
@@ -54,6 +56,29 @@ class AuthRepositoryImpl @Inject constructor(
         val credential = EmailAuthProvider.getCredential(email, currentPassword)
         user.reauthenticate(credential).await()
         user.updatePassword(newPassword).await()
+    }
+
+    override suspend fun deleteAccount(currentPassword: String): Result<Unit> = runCatching {
+        val user = auth.currentUser ?: error("Not signed in")
+        val email = user.email ?: error("No email on this account")
+        val uid = user.uid
+
+        // Firebase requires a recent login before letting you delete an account —
+        // same rule as changing a password.
+        val credential = EmailAuthProvider.getCredential(email, currentPassword)
+        user.reauthenticate(credential).await()
+
+        // Delete their notes BEFORE the account, so nothing gets orphaned in
+        // Firestore if something goes wrong partway through.
+        val notesSnapshot = firestore.collection("users").document(uid).collection("notes").get().await()
+        val batch = firestore.batch()
+        for (doc in notesSnapshot.documents) {
+            batch.delete(doc.reference)
+        }
+        batch.commit().await()
+
+        // Now the account itself.
+        user.delete().await()
     }
 
     override fun signOut() = auth.signOut()

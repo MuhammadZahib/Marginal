@@ -27,7 +27,6 @@ class AuthViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AuthUiState())
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
 
-    // Eagerly shared so Splash can read .value immediately without waiting for a collector.
     val currentUser: StateFlow<AuthUser?> = authRepository.currentUser
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
 
@@ -73,6 +72,18 @@ class AuthViewModel @Inject constructor(
                     onSuccess()
                 }
                 .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't change password") }
+        }
+    }
+
+    fun deleteAccount(currentPassword: String, onSuccess: () -> Unit) {
+        viewModelScope.launch {
+            _uiState.value = AuthUiState(isLoading = true)
+            authRepository.deleteAccount(currentPassword)
+                .onSuccess {
+                    _uiState.value = AuthUiState()
+                    onSuccess()
+                }
+                .onFailure { e -> _uiState.value = AuthUiState(errorMessage = e.message ?: "Couldn't delete account") }
         }
     }
 
