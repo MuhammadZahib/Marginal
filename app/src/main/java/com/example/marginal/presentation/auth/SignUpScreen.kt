@@ -1,5 +1,7 @@
 package com.example.marginal.presentation.auth
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -27,13 +30,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.presentation.common.MarginalBackButton
 import com.example.marginal.ui.theme.Brick
 import com.example.marginal.ui.theme.Ink
 import com.example.marginal.ui.theme.Paper
+
+private const val TERMS_PRIVACY_URL = "https://muhammadzahib.github.io/Marginal/"
 
 @Composable
 fun SignUpScreen(
@@ -46,6 +56,7 @@ fun SignUpScreen(
     var password by remember { mutableStateOf("") }
     var agreedToTerms by remember { mutableStateOf(false) }
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -97,7 +108,21 @@ fun SignUpScreen(
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Checkbox(checked = agreedToTerms, onCheckedChange = { agreedToTerms = it })
-            Text("I agree to the Terms & Privacy Policy", style = MaterialTheme.typography.labelSmall)
+
+            val annotatedText = buildAnnotatedString {
+                append("I agree to the ")
+                withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline, color = Ink)) {
+                    append("Terms & Privacy Policy")
+                }
+            }
+            ClickableText(
+                text = annotatedText,
+                style = MaterialTheme.typography.labelSmall,
+                onClick = {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(TERMS_PRIVACY_URL))
+                    context.startActivity(intent)
+                },
+            )
         }
 
         if (uiState.errorMessage != null) {
