@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
@@ -52,39 +54,48 @@ fun AddEditNoteScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showDeleteConfirm by remember { mutableStateOf(false) }
+    val isBusy = uiState.isSaving
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Paper)
             .statusBarsPadding()
+            .imePadding()
             .padding(horizontal = 16.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            MarginalBackButton(onClick = onBackClick, tint = Ink)
+            MarginalBackButton(
+                onClick = { if (!isBusy) onBackClick() },
+                tint = if (isBusy) Ink.copy(alpha = 0.4f) else Ink,
+            )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            MarginalIconButton(onClick = onScanClick) {
-                CameraIcon(modifier = Modifier.size(19.dp), tint = Ink)
+            MarginalIconButton(onClick = { if (!isBusy) onScanClick() }) {
+                CameraIcon(modifier = Modifier.size(19.dp), tint = if (isBusy) Ink.copy(alpha = 0.4f) else Ink)
             }
             Spacer(modifier = Modifier.width(4.dp))
 
             if (uiState.isEditMode) {
-                MarginalIconButton(onClick = { showDeleteConfirm = true }) {
-                    TrashIcon(modifier = Modifier.size(18.dp), tint = Brick)
+                MarginalIconButton(onClick = { if (!isBusy) showDeleteConfirm = true }) {
+                    TrashIcon(modifier = Modifier.size(18.dp), tint = if (isBusy) Brick.copy(alpha = 0.4f) else Brick)
                 }
                 Spacer(modifier = Modifier.width(4.dp))
             }
 
             MarginalIconButton(
-                onClick = { viewModel.save(onDone = onBackClick) },
-                backgroundColor = if (uiState.isSaving) Ink.copy(alpha = 0.5f) else Ink,
+                onClick = { if (!isBusy) viewModel.save(onDone = onBackClick) },
+                backgroundColor = if (isBusy) Ink.copy(alpha = 0.5f) else Ink,
             ) {
-                CheckIcon(modifier = Modifier.size(16.dp), tint = Paper)
+                if (isBusy) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = Paper, strokeWidth = 2.dp)
+                } else {
+                    CheckIcon(modifier = Modifier.size(16.dp), tint = Paper)
+                }
             }
         }
 
@@ -123,7 +134,7 @@ fun AddEditNoteScreen(
             NoteCategory.entries.forEach { category ->
                 FilterChip(
                     selected = uiState.category == category,
-                    onClick = { viewModel.onCategoryChange(category) },
+                    onClick = { if (!isBusy) viewModel.onCategoryChange(category) },
                     label = { Text(category.label()) },
                     shape = RoundedCornerShape(20.dp),
                     colors = FilterChipDefaults.filterChipColors(

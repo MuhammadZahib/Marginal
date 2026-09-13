@@ -23,6 +23,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.marginal.presentation.common.MarginalBackButton
@@ -60,7 +64,13 @@ fun ForgotPasswordScreen(
 
         if (uiState.resetEmailSent) {
             Text(
-                text = "Check your inbox — a reset link is on its way to $email.",
+                text = buildAnnotatedString {
+                    append("Check your inbox — a reset link is on its way to $email. Don't see it? Check your ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = Brick)) {
+                        append("spam")
+                    }
+                    append(" folder too.")
+                },
                 color = TextMuted,
             )
         } else {
