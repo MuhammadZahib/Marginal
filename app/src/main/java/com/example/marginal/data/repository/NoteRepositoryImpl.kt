@@ -14,6 +14,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -23,8 +24,14 @@ class NoteRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
 ) : NoteRepository {
 
-    // Notes live at users/{uid}/notes — scoping the path to the signed-in user
-    // is what makes the Firestore security rule simple and safe.
+    // How long we wait for the SERVER to confirm a write before giving up
+    // and treating it as done anyway. Firestore already applies writes to
+    // its local cache instantly (that's why a note appears in the list even
+    // offline) and syncs to the server automatically once back online — so
+    // without this timeout, a fully offline save would spin its loader
+    // forever waiting for a server confirmation that can't arrive yet.
+    private val writeTimeoutMs = 6000L
+
     private fun notesCollection() =
         firestore.collection("users").document(requireUid()).collection("notes")
 
@@ -48,7 +55,7 @@ class NoteRepositoryImpl @Inject constructor(
     override suspend fun addNote(title: String, body: String, category: NoteCategory): Result<String> = runCatching {
         val doc = notesCollection().document()
         val dto = NoteDto(id = doc.id, title = title, body = body, category = category.name)
-        doc.set(dto).await()
+        withTimeoutOrNull(writeTimeoutMs) { doc.set(dto).await() }
         doc.id
     }
 
@@ -58,17 +65,23 @@ class NoteRepositoryImpl @Inject constructor(
         body: String,
         category: NoteCategory,
     ): Result<Unit> = runCatching {
-        notesCollection().document(noteId).update(
-            mapOf(
-                "title" to title,
-                "body" to body,
-                "category" to category.name,
-                "updatedAt" to FieldValue.serverTimestamp(),
-            )
-        ).await()
+        withTimeoutOrNull(writeTimeoutMs) {
+            notesCollection().document(noteId).update(
+                mapOf(
+                    "title" to title,
+                    "body" to body,
+                    "category" to category.name,
+                    "updatedAt" to FieldValue.serverTimestamp(),
+                )
+            ).await()
+        }
+        Unit
     }
 
     override suspend fun deleteNote(noteId: String): Result<Unit> = runCatching {
-        notesCollection().document(noteId).delete().await()
+        withTimeoutOrNull(writeTimeoutMs) {
+            notesCollection().document(noteId).delete().await()
+        }
+        Unit
     }
 }

@@ -1,5 +1,6 @@
 package com.example.marginal.presentation.notes
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -55,6 +56,11 @@ fun AddEditNoteScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val isBusy = uiState.isSaving
+
+    // Absorbs the system back gesture/button while saving — without this,
+    // a user could still navigate away via the OS back gesture even though
+    // our own Back button ignores taps during a save.
+    BackHandler(enabled = isBusy) { /* no-op: intentionally blocks back while saving */ }
 
     Column(
         modifier = Modifier

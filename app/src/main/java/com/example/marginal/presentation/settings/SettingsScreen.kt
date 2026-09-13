@@ -92,8 +92,7 @@ fun SettingsScreen(
         SettingsGroupLabel("Account")
         SettingsClickableItem(label = "Change password", onClick = { showChangePasswordDialog = true })
 
-        SettingsGroupLabel("Preferences")
-        SettingsItem(label = "Dark mode", value = "Off")
+        // Preferences / Dark mode intentionally omitted for now — not shipping in this version.
 
         SettingsGroupLabel("About")
         SettingsItem(label = "App version", value = "1.0.0")
