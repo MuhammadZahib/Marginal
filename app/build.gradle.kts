@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.marginal"
+        applicationId = "com.zahvo.marginal"
         minSdk = 29
         targetSdk = 36
         versionCode = 1
