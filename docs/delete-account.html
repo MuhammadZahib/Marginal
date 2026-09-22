@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marginal — Delete Your Account</title>
+<style>
+  :root{
+    --ink:#26352C; --paper:#F1ECE0; --paper-card:#FBF8F2;
+    --amber:#D6A64B; --brick:#B5594A; --muted:#746C5C; --border:#DDD5C2;
+  }
+  body{
+    background:var(--paper); color:#1E2420; margin:0; padding:0;
+    font-family:-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.6;
+  }
+  .wrap{ max-width:640px; margin:0 auto; padding:48px 24px 96px; }
+  header h1{ font-size:30px; margin:0 0 6px; color:var(--ink); }
+  header p{ color:var(--muted); margin:0; font-size:14px; }
+  .card{ background:var(--paper-card); border-radius:16px; padding:28px 26px; margin:32px 0; border:1px solid var(--border); }
+  .card h2{ font-size:18px; color:var(--ink); margin:0 0 12px; }
+  .card p{ font-size:15px; margin:0 0 10px; }
+  .card ul{ margin:8px 0 0; padding-left:20px; }
+  .card li{ font-size:15px; margin-bottom:6px; }
+  .warn{ border-left:4px solid var(--brick); }
+  .steps{ border-left:4px solid var(--amber); }
+  label{ display:block; font-size:13px; font-weight:600; color:var(--muted); margin:16px 0 6px; text-transform:uppercase; letter-spacing:.04em; }
+  input, textarea{
+    width:100%; box-sizing:border-box; padding:12px 14px; border-radius:10px;
+    border:1.5px solid var(--border); font-size:15px; font-family:inherit; background:#fff;
+  }
+  textarea{ resize:vertical; min-height:80px; }
+  button{
+    margin-top:22px; width:100%; padding:15px; border:none; border-radius:12px;
+    background:var(--ink); color:var(--paper); font-size:15px; font-weight:700; cursor:pointer;
+  }
+  button:hover{ opacity:0.92; }
+  .note{ font-size:13px; color:var(--muted); margin-top:12px; }
+  .alt{ margin-top:40px; padding-top:24px; border-top:1px solid var(--border); }
+  .alt h2{ font-size:18px; color:var(--ink); }
+  footer{ text-align:center; color:var(--muted); font-size:13px; padding-top:24px; margin-top:40px; border-top:1px solid var(--border); }
+  a{ color:var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Delete Your Marginal Account</h1>
+    <p>This page explains how to permanently delete your Marginal account and data — with or without the app installed.</p>
+  </header>
+
+  <div class="card warn">
+    <h2>What gets deleted</h2>
+    <p>Deleting your account permanently removes:</p>
+    <ul>
+      <li>Your account credentials (email, name)</li>
+      <li>Every note you've created — titles, content, and categories</li>
+    </ul>
+    <p><strong>This action cannot be undone.</strong> There is no recovery period once it's processed.</p>
+  </div>
+
+  <div class="card steps">
+    <h2>Option 1 — Fastest: delete it in the app</h2>
+    <p>If you still have Marginal installed, this is instant:</p>
+    <p>Open Marginal → <strong>Settings</strong> → scroll to <strong>Danger Zone</strong> → tap <strong>Delete account</strong> → confirm with your password. Your account and all notes are deleted immediately.</p>
+  </div>
+
+  <div class="alt">
+    <h2>Option 2 — Request deletion without the app</h2>
+    <p>If you no longer have the app installed, use the form below. It opens your email client with a pre-filled request — just hit send.</p>
+
+    <label for="email">Email address on your account</label>
+    <input type="email" id="email" placeholder="you@example.com" required>
+
+    <label for="reason">Reason (optional)</label>
+    <textarea id="reason" placeholder="Optional — helps us improve, not required"></textarea>
+
+    <button onclick="sendRequest()">Request Account Deletion</button>
+    <p class="note">This opens your default email app addressed to our support address, with your details filled in. Send it from the same email address associated with your account so we can verify the request.</p>
+  </div>
+
+  <div class="card" style="margin-top:32px;">
+    <h2>What happens next</h2>
+    <p>Once we receive your request by email, we will delete your account and all associated notes within <strong>30 days</strong>. You'll receive a confirmation email once it's done.</p>
+  </div>
+
+  <footer>
+    Marginal · Questions? Contact <strong>muhammadzahib99@gmail.com</strong>
+<!--    <br><a href="./">← Back to Privacy Policy &amp; Terms</a>-->
+  </footer>
+
+</div>
+
+<script>
+function sendRequest() {
+  const email = document.getElementById('email').value.trim();
+  const reason = document.getElementById('reason').value.trim();
+
+  if (!email) {
+    alert('Please enter the email address on your account.');
+    return;
+  }
+
+  const subject = encodeURIComponent('Delete my Marginal account');
+  const body = encodeURIComponent(
+    'Please delete my Marginal account and all associated data.\n\n' +
+    'Account email: ' + email + '\n' +
+    (reason ? ('Reason (optional): ' + reason + '\n') : '') +
+    '\nI understand this action is permanent and cannot be undone.'
+  );
+
+  window.location.href = 'mailto:muhammadzahib99@gmail.com?subject=' + subject + '&body=' + body;
+}
+</script>
+
+</body>
+</html>
