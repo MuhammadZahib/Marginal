@@ -2,6 +2,7 @@ package com.example.marginal.presentation.notes
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 //import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -57,9 +59,6 @@ fun AddEditNoteScreen(
     var showDeleteConfirm by remember { mutableStateOf(false) }
     val isBusy = uiState.isSaving
 
-    // Absorbs the system back gesture/button while saving — without this,
-    // a user could still navigate away via the OS back gesture even though
-    // our own Back button ignores taps during a save.
     BackHandler(enabled = isBusy) { /* no-op: intentionally blocks back while saving */ }
 
     Column(
@@ -133,8 +132,15 @@ fun AddEditNoteScreen(
             modifier = Modifier.fillMaxWidth().weight(1f),
         )
 
+        // Horizontally scrollable — fillMaxWidth() alone would force all 4 chips to
+        // compress into whatever space is left, which on narrower screens (e.g. a
+        // Samsung S24) squeezes "Urgent" down to one character per line instead of
+        // letting the row simply scroll.
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .horizontalScroll(rememberScrollState())
+                .padding(vertical = 14.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             NoteCategory.entries.forEach { category ->

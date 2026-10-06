@@ -18,6 +18,7 @@ import com.example.marginal.presentation.notes.NotesListScreen
 import com.example.marginal.presentation.scan.ScanScreen
 import com.example.marginal.presentation.settings.SettingsScreen
 import com.example.marginal.presentation.splash.SplashScreen
+
 @Composable
 fun MarginalNavHost() {
     val navController: NavHostController = rememberNavController()
@@ -26,38 +27,38 @@ fun MarginalNavHost() {
         composable("splash") {
             SplashScreen(
                 onNavigateToLogin = {
-                    navController.navigate("login") { popUpTo("splash") { inclusive = true } }
+                    navController.navigateSafe("login") { popUpTo("splash") { inclusive = true } }
                 },
                 onNavigateToNotes = {
-                    navController.navigate("notes_list") { popUpTo("splash") { inclusive = true } }
+                    navController.navigateSafe("notes_list") { popUpTo("splash") { inclusive = true } }
                 },
             )
         }
         composable("login") {
             LoginScreen(
-                onForgotPasswordClick = { navController.navigate("forgot_password") },
-                onSignUpClick = { navController.navigate("signup") },
+                onForgotPasswordClick = { navController.navigateSafe("forgot_password") },
+                onSignUpClick = { navController.navigateSafe("signup") },
                 onLoginSuccess = {
-                    navController.navigate("notes_list") { popUpTo("login") { inclusive = true } }
+                    navController.navigateSafe("notes_list") { popUpTo("login") { inclusive = true } }
                 },
             )
         }
         composable("signup") {
             SignUpScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.popBackStackSafe() },
                 onSignUpSuccess = {
-                    navController.navigate("notes_list") { popUpTo("login") { inclusive = true } }
+                    navController.navigateSafe("notes_list") { popUpTo("login") { inclusive = true } }
                 },
             )
         }
         composable("forgot_password") {
-            ForgotPasswordScreen(onBackClick = { navController.popBackStack() })
+            ForgotPasswordScreen(onBackClick = { navController.popBackStackSafe() })
         }
         composable("notes_list") {
             NotesListScreen(
-                onNoteClick = { noteId -> navController.navigate("note_edit?noteId=$noteId") },
-                onAddNoteClick = { navController.navigate("note_edit") },
-                onSettingsClick = { navController.navigate("settings") },
+                onNoteClick = { noteId -> navController.navigateSafe("note_edit?noteId=$noteId") },
+                onAddNoteClick = { navController.navigateSafe("note_edit") },
+                onSettingsClick = { navController.navigateSafe("settings") },
             )
         }
         composable(
@@ -70,10 +71,6 @@ fun MarginalNavHost() {
         ) { backStackEntry ->
             val viewModel: AddEditNoteViewModel = hiltViewModel(backStackEntry)
 
-            // Bridge: ScanScreen writes recognized text into this entry's
-            // savedStateHandle before popping back — this picks it up.
-            // Using a StateFlow + LaunchedEffect (not observeForever) so the
-            // collection cancels automatically when this leaves composition.
             LaunchedEffect(backStackEntry) {
                 backStackEntry.savedStateHandle
                     .getStateFlow<String?>("scanned_text", null)
@@ -86,27 +83,27 @@ fun MarginalNavHost() {
             }
 
             AddEditNoteScreen(
-                onBackClick = { navController.popBackStack() },
-                onScanClick = { navController.navigate("scan") },
+                onBackClick = { navController.popBackStackSafe() },
+                onScanClick = { navController.navigateSafe("scan") },
                 viewModel = viewModel,
             )
         }
         composable("scan") {
             ScanScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.popBackStackSafe() },
                 onTextRecognized = { text ->
                     navController.previousBackStackEntry
                         ?.savedStateHandle
                         ?.set("scanned_text", text)
-                    navController.popBackStack()
+                    navController.popBackStackSafe()
                 },
             )
         }
         composable("settings") {
             SettingsScreen(
-                onBackClick = { navController.popBackStack() },
+                onBackClick = { navController.popBackStackSafe() },
                 onSignedOut = {
-                    navController.navigate("login") { popUpTo("notes_list") { inclusive = true } }
+                    navController.navigateSafe("login") { popUpTo("notes_list") { inclusive = true } }
                 },
             )
         }
